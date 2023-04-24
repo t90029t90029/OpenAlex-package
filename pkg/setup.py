@@ -1,3 +1,4 @@
+"""Set up the package"""
 from setuptools import setup
 
 setup(
@@ -9,5 +10,5 @@ setup(
     license="MIT",
     packages=["s23openalex"],
     scripts=[],
-    long_description="""A set of bibtex utilities""",
+    long_description="""package for final hw""",
 )

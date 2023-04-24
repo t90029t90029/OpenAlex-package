@@ -1,13 +1,16 @@
 """Work with https://api.openalex.org/works."""
 
 import time
-import requests
 import base64
+import requests
 import matplotlib.pyplot as plt
 from IPython.core.pylabtools import print_figure
+from IPython.display import HTML
 
 
 class Works:
+    """works class for return ris/bibtex"""
+
     def __init__(self, oaid):
         self.oaid = oaid
         self.req = requests.get(f"https://api.openalex.org/works/{oaid}")
@@ -45,9 +48,29 @@ class Works:
         year = self.data["publication_year"]
         citedby = self.data["cited_by_count"]
 
-        oa = self.data["id"]
-        s = f'{authors}, {title}, {volume}{issue}{pages}, ({year}), {self.data["doi"]}. cited by: {citedby}. {oa}'
-        return s
+        works_id = self.data["id"]
+        repr_string = f'{authors}, {title}, {journal}, {volume}{issue}{pages}, ({year}), \
+            {self.data["doi"]}. cited by: {citedby}. {works_id}'
+        return repr_string
+
+    def create_plot(self, markdown):
+        """Create a plot for _repr_markdown function"""
+        # Citation counts by year
+        years = [e["year"] for e in self.data["counts_by_year"]]
+        counts = [e["cited_by_count"] for e in self.data["counts_by_year"]]
+
+        fig, axis = plt.subplots()
+        axis.bar(years, counts)
+        axis.set_xlabel("year")
+        axis.set_ylabel("citation count")
+        data = print_figure(fig, "png")  # save figure in string
+        plt.close(fig)
+
+        b64 = base64.b64encode(data).decode("utf8")
+        citefig = f"![img](data:image/png;base64,{b64})"
+
+        markdown += "<br>" + citefig
+        return markdown
 
     def _repr_markdown_(self):
         _authors = [
@@ -79,29 +102,16 @@ class Works:
         year = self.data["publication_year"]
         citedby = self.data["cited_by_count"]
 
-        oa = self.data["id"]
+        works_id = self.data["id"]
 
-        # Citation counts by year
-        years = [e["year"] for e in self.data["counts_by_year"]]
-        counts = [e["cited_by_count"] for e in self.data["counts_by_year"]]
+        markdown = f'{authors}, *{title}*, **{journal}**, {volume}{issue}, {pages}, ({year}), \
+            {self.data["doi"]}. cited by: {citedby}. [Open Alex]({works_id})'
 
-        fig, ax = plt.subplots()
-        ax.bar(years, counts)
-        ax.set_xlabel("year")
-        ax.set_ylabel("citation count")
-        data = print_figure(fig, "png")  # save figure in string
-        plt.close(fig)
-
-        b64 = base64.b64encode(data).decode("utf8")
-        citefig = f"![img](data:image/png;base64,{b64})"
-
-        s = f'{authors}, *{title}*, **{journal}**, {volume}{issue}, {pages}, ({year}), {self.data["doi"]}. cited by: {citedby}. [Open Alex]({oa})'
-
-        s += "<br>" + citefig
-        return s
+        return self.create_plot(markdown)
 
     @property
     def ris(self):
+        """Return ris for the work"""
         fields = []
         if self.data["type"] == "journal-article":
             fields += ["TY  - JOUR"]
@@ -128,6 +138,7 @@ class Works:
         return ris
 
     def ris_html(self):
+        """Return ris in html form for the work"""
         fields = []
         if self.data["type"] == "journal-article":
             fields += ["TY  - JOUR"]
@@ -152,12 +163,13 @@ class Works:
 
         ris = "\n".join(fields)
         ris64 = base64.b64encode(ris.encode("utf-8")).decode("utf8")
-        uri = f'<pre>{ris}<pre><br><a href="data:text/plain;base64,{ris64}" download="ris">Download RIS</a>'
-        from IPython.display import HTML
+        uri = f'<pre>{ris}<pre><br><a href="data:text/plain;base64, \
+            {ris64}" download="ris">Download RIS</a>'
 
         return HTML(uri)
 
     def bibtex(self):
+        """Print out bibtex for the work"""
         fields = []
         if self.data["type"] == "journal-article":
             author_list = []
@@ -188,25 +200,27 @@ class Works:
 
         bibtex = "\n".join(fields)
         print(bibtex)
-        return
 
     def related_works(self):
+        """Return related works for the instance"""
         rworks = []
-        for rw_url in self.data["related_works"]:
-            rw = Works(rw_url)
-            rworks += [rw]
+        for related_works_url in self.data["related_works"]:
+            related_works = Works(related_works_url)
+            rworks += [related_works]
             time.sleep(0.101)
         return rworks
 
     def references(self):
+        """Return referenced works for the instance"""
         refers = []
         for rf_url in self.data["referenced_works"]:
-            rf = Works(rf_url)
-            refers += [rf]
+            refer = Works(rf_url)
+            refers += [refer]
             time.sleep(0.101)
         return refers
 
     def citing_works(self):
+        """Return citing works for the instance"""
         cite_data = requests.get(self.data["cited_by_api_url"]).json()
         cites = []
         for cite in cite_data["results"]:
