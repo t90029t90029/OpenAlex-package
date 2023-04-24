@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: s23openalex
+Version: 0.0.1
+Summary: bibtex utilities
+Home-page: UNKNOWN
+Maintainer: Shang Chun Lin
+Maintainer-email: shangchl@andrew.cmu.edu
+License: MIT
+Platform: UNKNOWN
+
+A set of bibtex utilities
+
