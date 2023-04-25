@@ -10,5 +10,6 @@ setup(
     license="MIT",
     packages=["s23openalex"],
     scripts=[],
+    entry_points={"console_scripts": ["s23 = s23openalex.main:main"]},
     long_description="""package for final hw""",
 )

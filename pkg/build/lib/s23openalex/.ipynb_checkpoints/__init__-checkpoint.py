@@ -1,3 +1,3 @@
 # pylint: disable=E0401
-"""Init entry for the package"""
+"""Init for package"""
 from .works import Works

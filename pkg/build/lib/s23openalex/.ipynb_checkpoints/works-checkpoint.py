@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 from IPython.core.pylabtools import print_figure
 from IPython.display import HTML
 
-
 class Works:
     """works class for return ris/bibtex"""
 
@@ -163,8 +162,8 @@ class Works:
 
         ris = "\n".join(fields)
         ris64 = base64.b64encode(ris.encode("utf-8")).decode("utf8")
-        uri = f'<pre>{ris}<pre><br><a href="data:text/plain;base64, {ris64} \
-            " download="ris">Download RIS</a>'
+        uri = f'<pre>{ris}<pre><br><a href="data:text/plain;base64, \
+            {ris64}" download="ris">Download RIS</a>'
 
         return HTML(uri)
 
@@ -200,7 +199,6 @@ class Works:
 
         bibtex = "\n".join(fields)
         print(bibtex)
-        return bibtex
 
     def related_works(self):
         """Return related works for the instance"""

@@ -1,3 +1,4 @@
+# pylint: disable=R0801
 """Test for the package"""
 from s23openalex import Works
 

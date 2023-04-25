@@ -1,3 +1,4 @@
+# pylint: disable=R0801
 """Work with https://api.openalex.org/works."""
 
 import time
@@ -10,6 +11,7 @@ from IPython.display import HTML
 
 class Works:
     """works class for return ris/bibtex"""
+
     def __init__(self, oaid):
         self.oaid = oaid
         self.req = requests.get(f"https://api.openalex.org/works/{oaid}")
@@ -52,13 +54,11 @@ class Works:
             {self.data["doi"]}. cited by: {citedby}. {works_id}'
         return repr_string
 
-    
     def create_plot(self, markdown):
         """Create a plot for _repr_markdown function"""
         # Citation counts by year
         years = [e["year"] for e in self.data["counts_by_year"]]
         counts = [e["cited_by_count"] for e in self.data["counts_by_year"]]
-        
         fig, axis = plt.subplots()
         axis.bar(years, counts)
         axis.set_xlabel("year")
@@ -68,10 +68,10 @@ class Works:
 
         b64 = base64.b64encode(data).decode("utf8")
         citefig = f"![img](data:image/png;base64,{b64})"
-        
+
         markdown += "<br>" + citefig
         return markdown
-    
+
     def _repr_markdown_(self):
         _authors = [
             f'[{au["author"]["display_name"]}]({au["author"]["id"]})'
@@ -136,7 +136,7 @@ class Works:
 
         ris = "\n".join(fields)
         return ris
-    
+
     def ris_html(self):
         """Return ris in html form for the work"""
         fields = []
@@ -163,8 +163,8 @@ class Works:
 
         ris = "\n".join(fields)
         ris64 = base64.b64encode(ris.encode("utf-8")).decode("utf8")
-        uri = f'<pre>{ris}<pre><br><a href="data:text/plain;base64, \
-            {ris64}" download="ris">Download RIS</a>'
+        uri = f'<pre>{ris}<pre><br><a href="data:text/plain;base64, {ris64} \
+            " download="ris">Download RIS</a>'
 
         return HTML(uri)
 
@@ -200,6 +200,7 @@ class Works:
 
         bibtex = "\n".join(fields)
         print(bibtex)
+        return bibtex
 
     def related_works(self):
         """Return related works for the instance"""
