@@ -18,4 +18,4 @@ REF_BIBTEX = """@article{Kitchin2015,
 def test_bibtex():
     """test for bibtex"""
     work = Works("https://doi.org/10.1021/acscatal.5b00538")
-    assert REF_BIBTEX == work.bibtex()
+    assert REF_BIBTEX == work.get_bibtex()
